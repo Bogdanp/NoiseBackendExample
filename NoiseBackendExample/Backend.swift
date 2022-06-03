@@ -37,18 +37,7 @@ class Backend {
   }
 
   func ping() -> Record {
-    Request(id: 1, data: .ping(Ping())).write(to: OutputPort(withHandle: ip.fileHandleForWriting))
+    Request(id: 0x800, data: .ping(Ping())).write(to: OutputPort(withHandle: ip.fileHandleForWriting))
     return Record.read(from: InputPort(withHandle: op.fileHandleForReading))!
-  }
-
-  private func send(_ data: String) {
-    let cstr = data.utf8CString
-    cstr.withUnsafeBytes({ buf in
-      try! ip.fileHandleForWriting.write(contentsOf: buf[..<(cstr.count-1)])
-    })
-  }
-
-  private func recv(_ n: Int) -> String {
-    String(data: try! op.fileHandleForReading.read(upToCount: n)!, encoding: .utf8)!
   }
 }

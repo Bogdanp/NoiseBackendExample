@@ -20,12 +20,12 @@ extension Varint {
       if nread == 0 {
         return nil
       }
-      let b = data[0]
+      let b = Int64(data[0])
       if b & 0x80 == 0 {
-        n = Int64(b) << s
+        n += b << s
         break
       } else {
-        n += (Int64(b) & 0x7F) << s
+        n += (b & 0x7F) << s
         s += 7
       }
     }
