@@ -36,9 +36,9 @@ class Backend {
     }
   }
 
-  func ping() -> String {
-    send("(ping)")
-    return recv(6)
+  func ping() -> Record {
+    Request(id: 1, data: .ping(Ping())).write(to: OutputPort(withHandle: ip.fileHandleForWriting))
+    return Record.read(from: InputPort(withHandle: op.fileHandleForReading))!
   }
 
   private func send(_ data: String) {
