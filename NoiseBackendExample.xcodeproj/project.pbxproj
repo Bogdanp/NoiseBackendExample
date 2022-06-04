@@ -10,6 +10,7 @@
 		4344A85B284A6B4C0031D0C8 /* SerdeRecords.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4344A859284A6B4C0031D0C8 /* SerdeRecords.swift */; };
 		4344A85C284A6B4C0031D0C8 /* Serde.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4344A85A284A6B4C0031D0C8 /* Serde.swift */; };
 		4344A85E284B22100031D0C8 /* Future.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4344A85D284B22100031D0C8 /* Future.swift */; };
+		4344A868284B46580031D0C8 /* SerdeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4344A867284B46580031D0C8 /* SerdeTests.swift */; };
 		4350F31F2843653A00BA29DC /* NoiseBackendExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4350F31E2843653A00BA29DC /* NoiseBackendExampleApp.swift */; };
 		4350F3212843653A00BA29DC /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4350F3202843653A00BA29DC /* ContentView.swift */; };
 		4350F3232843653C00BA29DC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4350F3222843653C00BA29DC /* Assets.xcassets */; };
@@ -19,10 +20,22 @@
 		4350F3352843667800BA29DC /* Backend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4350F3342843667800BA29DC /* Backend.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		4344A869284B46580031D0C8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4350F3132843653A00BA29DC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4350F31A2843653A00BA29DC;
+			remoteInfo = NoiseBackendExample;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		4344A859284A6B4C0031D0C8 /* SerdeRecords.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SerdeRecords.swift; sourceTree = "<group>"; };
 		4344A85A284A6B4C0031D0C8 /* Serde.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Serde.swift; sourceTree = "<group>"; };
 		4344A85D284B22100031D0C8 /* Future.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Future.swift; sourceTree = "<group>"; };
+		4344A865284B46580031D0C8 /* NoiseBackendExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NoiseBackendExampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		4344A867284B46580031D0C8 /* SerdeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SerdeTests.swift; sourceTree = "<group>"; };
 		4350F31B2843653A00BA29DC /* NoiseBackendExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NoiseBackendExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4350F31E2843653A00BA29DC /* NoiseBackendExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoiseBackendExampleApp.swift; sourceTree = "<group>"; };
 		4350F3202843653A00BA29DC /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -35,6 +48,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		4344A862284B46580031D0C8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4350F3182843653A00BA29DC /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -46,11 +66,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4344A866284B46580031D0C8 /* NoiseBackendExampleTests */ = {
+			isa = PBXGroup;
+			children = (
+				4344A867284B46580031D0C8 /* SerdeTests.swift */,
+			);
+			path = NoiseBackendExampleTests;
+			sourceTree = "<group>";
+		};
 		4350F3122843653A00BA29DC = {
 			isa = PBXGroup;
 			children = (
 				4350F32D2843654700BA29DC /* Packages */,
 				4350F31D2843653A00BA29DC /* NoiseBackendExample */,
+				4344A866284B46580031D0C8 /* NoiseBackendExampleTests */,
 				4350F31C2843653A00BA29DC /* Products */,
 				4350F3312843666E00BA29DC /* Frameworks */,
 			);
@@ -60,6 +89,7 @@
 			isa = PBXGroup;
 			children = (
 				4350F31B2843653A00BA29DC /* NoiseBackendExample.app */,
+				4344A865284B46580031D0C8 /* NoiseBackendExampleTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -107,6 +137,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		4344A864284B46580031D0C8 /* NoiseBackendExampleTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4344A86B284B46580031D0C8 /* Build configuration list for PBXNativeTarget "NoiseBackendExampleTests" */;
+			buildPhases = (
+				4344A861284B46580031D0C8 /* Sources */,
+				4344A862284B46580031D0C8 /* Frameworks */,
+				4344A863284B46580031D0C8 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4344A86A284B46580031D0C8 /* PBXTargetDependency */,
+			);
+			name = NoiseBackendExampleTests;
+			productName = NoiseBackendExampleTests;
+			productReference = 4344A865284B46580031D0C8 /* NoiseBackendExampleTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		4350F31A2843653A00BA29DC /* NoiseBackendExample */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4350F32A2843653C00BA29DC /* Build configuration list for PBXNativeTarget "NoiseBackendExample" */;
@@ -137,6 +185,10 @@
 				LastSwiftUpdateCheck = 1340;
 				LastUpgradeCheck = 1340;
 				TargetAttributes = {
+					4344A864284B46580031D0C8 = {
+						CreatedOnToolsVersion = 13.4;
+						TestTargetID = 4350F31A2843653A00BA29DC;
+					};
 					4350F31A2843653A00BA29DC = {
 						CreatedOnToolsVersion = 13.4;
 					};
@@ -156,11 +208,19 @@
 			projectRoot = "";
 			targets = (
 				4350F31A2843653A00BA29DC /* NoiseBackendExample */,
+				4344A864284B46580031D0C8 /* NoiseBackendExampleTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		4344A863284B46580031D0C8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4350F3192843653A00BA29DC /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -174,6 +234,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		4344A861284B46580031D0C8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4344A868284B46580031D0C8 /* SerdeTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4350F3172843653A00BA29DC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -189,7 +257,49 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		4344A86A284B46580031D0C8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4350F31A2843653A00BA29DC /* NoiseBackendExample */;
+			targetProxy = 4344A869284B46580031D0C8 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		4344A86C284B46580031D0C8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = H3YE679B58;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.defn.NoiseBackendExampleTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/NoiseBackendExample.app/Contents/MacOS/NoiseBackendExample";
+			};
+			name = Debug;
+		};
+		4344A86D284B46580031D0C8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = H3YE679B58;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.defn.NoiseBackendExampleTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/NoiseBackendExample.app/Contents/MacOS/NoiseBackendExample";
+			};
+			name = Release;
+		};
 		4350F3282843653C00BA29DC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -360,6 +470,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		4344A86B284B46580031D0C8 /* Build configuration list for PBXNativeTarget "NoiseBackendExampleTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4344A86C284B46580031D0C8 /* Debug */,
+				4344A86D284B46580031D0C8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		4350F3162843653A00BA29DC /* Build configuration list for PBXProject "NoiseBackendExample" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

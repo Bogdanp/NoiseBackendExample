@@ -1,6 +1,6 @@
 import Dispatch
-import Noise
 import Foundation
+import Noise
 
 #if arch(x86_64)
 let ARCH = "x86_64"
@@ -56,8 +56,9 @@ class Backend {
   }
 
   private func read() {
+    var buf = Data(count: 64*1024)
     while true {
-      guard let res = Record.read(from: inp) else {
+      guard let res = Record.read(from: inp, using: &buf) else {
         continue
       }
       switch res {
@@ -72,7 +73,6 @@ class Backend {
         req.fut.resolve(with: r.data)
         totalRequests += 1
         totalWaitNanos += DispatchTime.now().uptimeNanoseconds - req.time.uptimeNanoseconds
-        continue
       default:
         continue
       }

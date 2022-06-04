@@ -140,8 +140,7 @@
 ;; field ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (provide
- Listof
- Tuple)
+ Listof)
 
 (struct field-type (read-proc write-proc swift-proc))
 
@@ -177,7 +176,7 @@
   #:write (λ (bs out)
             (write-varint (bytes-length bs) out)
             (write-bytes bs out))
-  #:swift (λ () "[CChar]"))
+  #:swift (λ () "Data"))
 
 (define-field-type String
   #:read (λ (in)
@@ -214,37 +213,20 @@
    (λ ()
      (format "[~a]" swift-type))))
 
-(define (Tuple . ts)
-  (field-type
-   (λ (in)
-     (for/list ([t (in-list ts)])
-       (read-field t in)))
-   (λ (vs out)
-     (for ([t (in-list ts)]
-           [v (in-list vs)])
-       (write-field t v out)))
-   (λ ()
-     (call-with-output-string
-      (lambda (out)
-        (display "(" out)
-        (display
-         (string-join
-          (for/list ([t (in-list ts)])
-            (swift-type t))
-          ", ")
-         out)
-        (display ")" out))))))
-
 (define-field-type Record
   #:read read-record
   #:write write-record)
 
 (module+ test
   (test-case "complex field serde"
-    (define t (Tuple Bool Varint String (Listof Varint)))
-    (define v '(#t -1 "hello" (0 1 2 #x-FF #x7F #xFFFF)))
-    (define bs (with-output-to-bytes (λ () (write-field t v))))
-    (check-equal? v (read-field t (open-input-bytes bs)))))
+    (define-record Example
+      [b Bool boolean?]
+      [i Varint integer?]
+      [s String string?]
+      [l (Listof Varint) list?])
+    (define v (Example #t -1 "hello" '(0 1 2 #x-FF #x7F #xFFFF)))
+    (define bs (with-output-to-bytes (λ () (write-field Record v))))
+    (check-equal? v (read-field Record (open-input-bytes bs)))))
 
 
 ;; swift ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -263,8 +245,10 @@
     #t))
 
 (define (write-Swift-code [out (current-output-port)])
-  (fprintf out "// This file was automatically generated.~n~n")
-  (fprintf out "enum Record {~n")
+  (fprintf out "// This file was automatically generated.~n")
+  (fprintf out "import Foundation~n~n")
+
+  (fprintf out "public enum Record {~n")
   (define sorted-ids (sort (hash-keys record-infos) symbol<?))
   (for ([id (in-list sorted-ids)])
     (define r (hash-ref record-infos id))
@@ -274,26 +258,26 @@
           ""))
     (fprintf out " ~a case ~a(~a)~n" maybe-indirect (case-id id) id))
 
-  (fprintf out "  static func read(from inp: InputPort) -> Record? {~n")
-  (fprintf out "    guard let sym = Symbol.read(from: inp) else {~n")
+  (fprintf out "  public static func read(from inp: InputPort, using data: inout Data) -> Record? {~n")
+  (fprintf out "    guard let sym = Symbol.read(from: inp, using: &data) else {~n")
   (fprintf out "      return nil~n")
   (fprintf out "    }~n")
-  (fprintf out "    guard let _ = Varint.read(from: inp) else {~n")
+  (fprintf out "    guard let _ = Varint.read(from: inp, using: &data) else {~n")
   (fprintf out "      return nil~n")
   (fprintf out "    }~n")
   (fprintf out "    switch sym {~n")
   (for ([id (in-list sorted-ids)])
-    (fprintf out "      case \"~a\":~n" id)
-    (fprintf out "        return .~a(~a.read(from: inp))~n" (case-id id) id))
-  (fprintf out "      default:~n")
-  (fprintf out "        return nil~n")
+    (fprintf out "    case \"~a\":~n" id)
+    (fprintf out "      return .~a(~a.read(from: inp, using: &data))~n" (case-id id) id))
+  (fprintf out "    default:~n")
+  (fprintf out "      return nil~n")
   (fprintf out "    }~n")
   (fprintf out "  }~n")
 
-  (fprintf out "  func write(to out: OutputPort) {~n")
+  (fprintf out "  public func write(to out: OutputPort) {~n")
   (fprintf out "    switch self {~n")
   (for ([id (in-list sorted-ids)])
-    (fprintf out "      case .~a(let r): r.write(to: out)~n" (case-id id)))
+    (fprintf out "    case .~a(let r): r.write(to: out)~n" (case-id id)))
   (fprintf out "    }~n")
   (fprintf out "  }~n")
   (fprintf out "}~n")
@@ -304,28 +288,41 @@
 
 (define (write-record-code r [out (current-output-port)])
   (match-define (record-info id _constructor _version fields) r)
-  (fprintf out "struct ~a {~n" id)
+  (fprintf out "public struct ~a {~n" id)
   (for ([f (in-list fields)])
     (fprintf out
-             "  let ~a: ~a~n"
+             "  public let ~a: ~a~n"
              (record-field-id f)
              (swift-type (record-field-type f))))
 
-  (fprintf out "  static func read(from inp: InputPort) -> ~a {~n" id)
-  (fprintf out "    return ~a(~n" id)
+  (fprintf out "  public init(~n")
   (define len (length fields))
+  (for ([(f idx) (in-indexed (in-list fields))])
+    (define last? (= idx (sub1 len)))
+    (define maybe-comma (if last? "" ","))
+    (define id (record-field-id f))
+    (define type (swift-type (record-field-type f)))
+    (fprintf out "    ~a: ~a~a~n" id type maybe-comma))
+  (fprintf out "  ) {~n")
+  (for ([f (in-list fields)])
+    (define id (record-field-id f))
+    (fprintf out "    self.~a = ~a~n" id id))
+  (fprintf out "  }~n")
+
+  (fprintf out "  public static func read(from inp: InputPort, using data: inout Data) -> ~a {~n" id)
+  (fprintf out "    return ~a(~n" id)
   (for ([(f idx) (in-indexed (in-list fields))])
     (define last? (= idx (sub1 len)))
     (define maybe-comma (if last? "" ", "))
     (fprintf out
-             "      ~a: ~a.read(from: inp)!~a~n"
+             "      ~a: ~a.read(from: inp, using: &data)!~a~n"
              (record-field-id f)
              (swift-type (record-field-type f))
              maybe-comma))
   (fprintf out "    )~n")
   (fprintf out "  }~n")
 
-  (fprintf out "  func write(to out: OutputPort) {~n")
+  (fprintf out "  public func write(to out: OutputPort) {~n")
   (fprintf out "    Symbol(\"~a\").write(to: out)~n" id)
   (fprintf out "    Varint(0).write(to: out)~n")
   (for ([f (in-list fields)])

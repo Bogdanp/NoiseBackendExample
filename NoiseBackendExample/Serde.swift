@@ -1,45 +1,63 @@
 import Foundation
 
 extension Bool {
-  static func read(from inp: InputPort) -> Bool? {
-    var data = Data(count: 1)
-    let _ = data.withUnsafeMutableBytes { inp.read($0, count: 1) }
-    return data[0] == 1
+  public static func read(from inp: InputPort, using buf: inout Data) -> Bool? {
+    return inp.readByte() == 1
   }
 
-  func write(to out: OutputPort) {
+  public func write(to out: OutputPort) {
     out.write(contentsOf: Data([self ? 1 : 0]))
   }
 }
 
-typealias Varint = Int64
-
-extension Varint {
-  static func read(from inp: InputPort) -> Varint? {
-    var data = Data(count: 1)
-    var s = Int64(0)
-    var n = Int64(0)
-    while true {
-      let nread = data.withUnsafeMutableBytes { inp.read($0, count: 1) }
-      if nread == 0 {
-        return nil
-      }
-      let b = Int64(data[0])
-      if b & 0x80 == 0 {
-        n += b << s
-        break
-      } else {
-        n += (b & 0x7F) << s
-        s += 7
-      }
+extension Data {
+  public static func read(from inp: InputPort, using buf: inout Data) -> Data? {
+    guard let vlen = Varint.read(from: inp, using: &buf) else {
+      return nil
     }
-    if n & 1 == 0 {
-      return Varint(n >> 1)
+    assert(vlen >= 0)
+    if vlen == 0 {
+      return Data(count: 0)
     }
-    return Varint(~(n >> 1))
+    let len = Int(vlen)
+    buf.reserveCapacity(len)
+    if inp.read(&buf, count: len) < len {
+      return nil
+    }
+    return buf[0..<len]
   }
 
-  func write(to out: OutputPort) {
+  public func write(to out: OutputPort) {
+    Varint(count).write(to: out)
+    out.write(contentsOf: self)
+  }
+}
+
+public typealias Varint = Int64
+
+extension Varint {
+  public static func read(from inp: InputPort, using buf: inout Data) -> Varint? {
+    var s = Varint(0)
+    var n = Varint(0)
+    while true {
+      guard let b = inp.readByte() else {
+        return nil
+      }
+      let x = Int64(b)
+      if x & 0x80 == 0 {
+        n += x << s
+        break
+      }
+      n += (x & 0x7F) << s
+      s += 7
+    }
+    if n & 1 == 0 {
+      return n >> 1
+    }
+    return ~(n >> 1)
+  }
+
+  public func write(to out: OutputPort) {
     var data = Data(count: 0)
     var n = (self << 1) ^ (self < 0 ? -1 : 0)
     while true {
@@ -57,59 +75,131 @@ extension Varint {
 }
 
 extension String {
-  static func read(from inp: InputPort) -> String? {
-    guard let len = Varint.read(from: inp) else {
+  public static func read(from inp: InputPort, using buf: inout Data) -> String? {
+    guard let vlen = Varint.read(from: inp, using: &buf) else {
       return nil
     }
-    if len == 0 {
+    assert(vlen >= 0)
+    if vlen == 0 {
       return ""
     }
-    var data = Data(count: Int(len))
-    if data.withUnsafeMutableBytes({ inp.read($0, count: Int(len)) }) < len {
+    let len = Int(vlen)
+    buf.reserveCapacity(len)
+    if inp.read(&buf, count: len) < len {
       return nil
     }
-    guard let str = String(data: data, encoding: .utf8) else {
+    guard let str = String(data: buf[0..<len], encoding: .utf8) else {
       return nil
     }
-    return Symbol(str)
+    return str
   }
 
-  func write(to out: OutputPort) {
+  public func write(to out: OutputPort) {
     let data = data(using: .utf8)!
     Varint(data.count).write(to: out)
-    out.write(contentsOf: data[0..<(data.count)])
+    out.write(contentsOf: data)
   }
 }
 
 typealias Symbol = String
 
-class InputPort {
-  let handle: FileHandle
-
-  init(withHandle h: FileHandle) {
-    handle = h
+extension Array where Element == Record {
+  public static func read(from inp: InputPort, using buf: inout Data) -> [Record]? {
+    guard let len = Varint.read(from: inp, using: &buf) else {
+      return nil
+    }
+    assert(len >= 0)
+    if len == 0 {
+      return []
+    }
+    var res = [Record]()
+    for _ in 0..<len {
+      guard let r = Record.read(from: inp, using: &buf) else {
+        return nil
+      }
+      res.append(r)
+    }
+    return res
   }
 
-  func read(_ out: UnsafeMutableRawBufferPointer, count n: Int) -> Int {
-    guard let data = try! handle.read(upToCount: n) else {
-      return 0
+  public func write(to out: OutputPort) {
+    Varint(count).write(to: out)
+    for r in self {
+      r.write(to: out)
     }
-    if data.count == 0 {
-      return 0
-    }
-    out.copyBytes(from: data)
-    return data.count
   }
 }
 
-class OutputPort {
+public class InputPort {
+  let fd: Int32
+  let bufsize: Int
+  var buf: Data!
+  var cnt = 0
+  var idx = 0
+
+  public init(withHandle h: FileHandle, andBufSize bufsize: Int = 8192) {
+    self.fd = h.fileDescriptor
+    self.buf = Data(count: bufsize)
+    self.bufsize = bufsize
+  }
+
+  public func read(_ data: inout Data, count n: Int) -> Int {
+    var pos = 0
+    var want = n
+    while want > 0 {
+      let nread = data[pos..<n].withUnsafeMutableBytes { read($0, count: want) }
+      if nread == 0 {
+        return pos
+      }
+      want -= nread
+      pos += nread
+    }
+    return pos
+  }
+
+  public func read(_ out: UnsafeMutableRawBufferPointer, count want: Int) -> Int {
+    more()
+    if cnt == 0 {
+      return 0
+    }
+    let have = cnt - idx
+    if have >= want {
+      out.copyBytes(from: buf[idx..<idx+want])
+      idx += want
+      return want
+    }
+    out.copyBytes(from: buf[idx..<cnt])
+    idx += have
+    return have
+  }
+
+  public func readByte() -> UInt8? {
+    more()
+    if cnt == 0 {
+      return nil
+    }
+    let res = buf[idx]
+    idx += 1
+    return res
+  }
+
+  private func more() {
+    if idx < cnt {
+      return
+    }
+    cnt = buf.withUnsafeMutableBytes{ Darwin.read(fd, $0.baseAddress!, bufsize) }
+    idx = 0
+  }
+}
+
+public class OutputPort {
   let handle: FileHandle
 
-  init(withHandle h: FileHandle) {
+  public init(withHandle h: FileHandle) {
     handle = h
   }
 
-  func write(contentsOf data: Data) {
+  public func write(contentsOf data: Data) {
     try! handle.write(contentsOf: data)
   }
 }
