@@ -6,8 +6,7 @@
          racket/contract
          racket/generic
          racket/match
-         racket/port
-         racket/string)
+         racket/port)
 
 ;; record ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -24,9 +23,6 @@
   (define id (read-field Symbol in))
   (unless (hash-has-key? record-infos id)
     (error 'read-record "unknown record type ~a" id))
-  (define version (read-field Varint in))
-  (unless (zero? version)
-    (error 'read-record "unexpected version ~a" version))
   (define r (hash-ref record-infos id))
   (apply
    (record-info-constructor r)
@@ -35,12 +31,11 @@
 
 (define (do-write-record r v [out (current-output-port)])
   (write-field Symbol (record-info-id r) out)
-  (write-field Varint (record-info-version r) out)
   (for ([f (in-list (record-info-fields r))])
     (write-field (record-field-type f) ((record-field-accessor f) v) out)))
 
 (define record-infos (make-hasheq))
-(struct record-info (id constructor version fields))
+(struct record-info (id constructor fields))
 (struct record-field (id type accessor))
 
 (define-syntax (define-record stx)
@@ -89,7 +84,7 @@
            [(define (write-record self [out (current-output-port)])
               (do-write-record record-id self out))])
          (define record-id
-           (record-info 'id id 0 (list (record-field 'fld.id fld.ft accessor-id) ...)))
+           (record-info 'id id (list (record-field 'fld.id fld.ft accessor-id) ...)))
          (hash-set! record-infos 'id record-id)
          (define/contract (constructor-id constructor-arg ...)
            (->* (required-ctor-arg-ctc ...)
@@ -262,9 +257,6 @@
   (fprintf out "    guard let sym = Symbol.read(from: inp, using: &buf) else {~n")
   (fprintf out "      return nil~n")
   (fprintf out "    }~n")
-  (fprintf out "    guard let _ = Varint.read(from: inp, using: &buf) else {~n")
-  (fprintf out "      return nil~n")
-  (fprintf out "    }~n")
   (fprintf out "    switch sym {~n")
   (for ([id (in-list sorted-ids)])
     (fprintf out "    case \"~a\":~n" id)
@@ -287,7 +279,7 @@
     (write-record-code r out)))
 
 (define (write-record-code r [out (current-output-port)])
-  (match-define (record-info id _constructor _version fields) r)
+  (match-define (record-info id _constructor fields) r)
   (fprintf out "public struct ~a: Readable, Writeable {~n" id)
   (for ([f (in-list fields)])
     (fprintf out
@@ -322,7 +314,6 @@
 
   (fprintf out "  public func write(to out: OutputPort) {~n")
   (fprintf out "    Symbol(\"~a\").write(to: out)~n" id)
-  (fprintf out "    Varint(0).write(to: out)~n")
   (for ([f (in-list fields)])
     (fprintf out "    ~a.write(to: out)~n" (record-field-id f)))
   (fprintf out "  }~n")

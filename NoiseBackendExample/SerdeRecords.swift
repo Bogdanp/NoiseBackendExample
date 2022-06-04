@@ -10,9 +10,6 @@ public enum Record: Readable, Writeable {
     guard let sym = Symbol.read(from: inp, using: &buf) else {
       return nil
     }
-    guard let _ = Varint.read(from: inp, using: &buf) else {
-      return nil
-    }
     switch sym {
     case "Ping":
       return .ping(Ping.read(from: inp, using: &buf)!)
@@ -45,7 +42,6 @@ public struct Ping: Readable, Writeable {
   }
   public func write(to out: OutputPort) {
     Symbol("Ping").write(to: out)
-    Varint(0).write(to: out)
   }
 }
 public struct Pong: Readable, Writeable {
@@ -58,7 +54,6 @@ public struct Pong: Readable, Writeable {
   }
   public func write(to out: OutputPort) {
     Symbol("Pong").write(to: out)
-    Varint(0).write(to: out)
   }
 }
 public struct Request: Readable, Writeable {
@@ -79,7 +74,6 @@ public struct Request: Readable, Writeable {
   }
   public func write(to out: OutputPort) {
     Symbol("Request").write(to: out)
-    Varint(0).write(to: out)
     id.write(to: out)
     data.write(to: out)
   }
@@ -102,7 +96,6 @@ public struct Response: Readable, Writeable {
   }
   public func write(to out: OutputPort) {
     Symbol("Response").write(to: out)
-    Varint(0).write(to: out)
     id.write(to: out)
     data.write(to: out)
   }
