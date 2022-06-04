@@ -1,14 +1,16 @@
 import Foundation
 
+/// The protocol for readable serde values.
 public protocol Readable where Self: Equatable {
   static func read(from inp: InputPort, using buf: inout Data) -> Self?
 }
 
-public protocol Writeable where Self: Equatable {
+/// The protocol for writable serde values.
+public protocol Writable where Self: Equatable {
   func write(to out: OutputPort)
 }
 
-extension Bool: Readable, Writeable {
+extension Bool: Readable, Writable {
   public static func read(from inp: InputPort, using buf: inout Data) -> Bool? {
     return inp.readByte() == 1
   }
@@ -18,7 +20,7 @@ extension Bool: Readable, Writeable {
   }
 }
 
-extension Data: Readable, Writeable {
+extension Data: Readable, Writable {
   public static func read(from inp: InputPort, using buf: inout Data) -> Data? {
     guard let vlen = Varint.read(from: inp, using: &buf) else {
       return nil
@@ -43,7 +45,7 @@ extension Data: Readable, Writeable {
 
 public typealias Varint = Int64
 
-extension Varint: Readable, Writeable {
+extension Varint: Readable, Writable {
   public static func read(from inp: InputPort, using buf: inout Data) -> Varint? {
     var s = Varint(0)
     var n = Varint(0)
@@ -84,7 +86,7 @@ extension Varint: Readable, Writeable {
 
 public typealias UVarint = UInt64
 
-extension UVarint: Readable, Writeable {
+extension UVarint: Readable, Writable {
   public static func read(from inp: InputPort, using buf: inout Data) -> UVarint? {
     var s = UVarint(0)
     var n = UVarint(0)
@@ -120,7 +122,7 @@ extension UVarint: Readable, Writeable {
   }
 }
 
-extension String: Readable, Writeable {
+extension String: Readable, Writable {
   public static func read(from inp: InputPort, using buf: inout Data) -> String? {
     guard let vlen = Varint.read(from: inp, using: &buf) else {
       return nil
@@ -149,7 +151,7 @@ extension String: Readable, Writeable {
 
 typealias Symbol = String
 
-extension Array where Element: Readable, Element: Writeable {
+extension Array where Element: Readable, Element: Writable {
   public static func read(from inp: InputPort, using buf: inout Data) -> [Element]? {
     guard let len = Varint.read(from: inp, using: &buf) else {
       return nil
@@ -176,12 +178,13 @@ extension Array where Element: Readable, Element: Writeable {
   }
 }
 
+/// Wraps a `FileHandle` to add buffered reading support.
 public class InputPort {
-  let fd: Int32
-  let bufsize: Int
-  var buf: Data!
-  var cnt = 0
-  var idx = 0
+  private let fd: Int32
+  private let bufsize: Int
+  private var buf: Data!
+  private var cnt = 0
+  private var idx = 0
 
   public init(withHandle h: FileHandle, andBufSize bufsize: Int = 8192) {
     self.fd = h.fileDescriptor
@@ -189,6 +192,8 @@ public class InputPort {
     self.bufsize = bufsize
   }
 
+  /// Reads up to `count` bytes from the handle into `data`, returning
+  /// the number of bytes read.  Returns 0 at EOF.
   public func read(_ data: inout Data, count n: Int) -> Int {
     var pos = 0
     var want = n
@@ -203,6 +208,8 @@ public class InputPort {
     return pos
   }
 
+  /// Reads up to `count` bytes from the handle into `out`, returning
+  /// the number of bytes read.  Returns 0 at EOF.
   public func read(_ out: UnsafeMutableRawBufferPointer, count want: Int) -> Int {
     more()
     if cnt == 0 {
@@ -219,6 +226,7 @@ public class InputPort {
     return have
   }
 
+  /// Reads a single byte from the handle, returning `nil` on EOF.
   public func readByte() -> UInt8? {
     more()
     if cnt == 0 {
@@ -238,8 +246,9 @@ public class InputPort {
   }
 }
 
+/// Wraps a `FileHandle`.
 public class OutputPort {
-  let handle: FileHandle
+  private let handle: FileHandle
 
   public init(withHandle h: FileHandle) {
     handle = h

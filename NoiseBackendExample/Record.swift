@@ -1,7 +1,7 @@
 // This file was automatically generated.
 import Foundation
 
-public enum Record: Readable, Writeable {
+public enum Record: Readable, Writable {
   indirect case request(Request)
   indirect case response(Response)
   case ping(Ping)
@@ -32,11 +32,11 @@ public enum Record: Readable, Writeable {
     }
   }
 }
-public struct Request: Readable, Writeable {
-  public let id: Varint
+public struct Request: Readable, Writable {
+  public let id: UVarint
   public let data: Record
   public init(
-    id: Varint,
+    id: UVarint,
     data: Record
   ) {
     self.id = id
@@ -44,7 +44,7 @@ public struct Request: Readable, Writeable {
   }
   public static func read(from inp: InputPort, using buf: inout Data) -> Request? {
     return Request(
-      id: Varint.read(from: inp, using: &buf)!, 
+      id: UVarint.read(from: inp, using: &buf)!,
       data: Record.read(from: inp, using: &buf)!
     )
   }
@@ -54,11 +54,11 @@ public struct Request: Readable, Writeable {
     data.write(to: out)
   }
 }
-public struct Response: Readable, Writeable {
-  public let id: Varint
+public struct Response: Readable, Writable {
+  public let id: UVarint
   public let data: Record
   public init(
-    id: Varint,
+    id: UVarint,
     data: Record
   ) {
     self.id = id
@@ -66,7 +66,7 @@ public struct Response: Readable, Writeable {
   }
   public static func read(from inp: InputPort, using buf: inout Data) -> Response? {
     return Response(
-      id: Varint.read(from: inp, using: &buf)!, 
+      id: UVarint.read(from: inp, using: &buf)!,
       data: Record.read(from: inp, using: &buf)!
     )
   }
@@ -76,7 +76,7 @@ public struct Response: Readable, Writeable {
     data.write(to: out)
   }
 }
-public struct Ping: Readable, Writeable {
+public struct Ping: Readable, Writable {
   public init(
   ) {
   }
@@ -88,7 +88,7 @@ public struct Ping: Readable, Writeable {
     UVarint(0x2).write(to: out)
   }
 }
-public struct Pong: Readable, Writeable {
+public struct Pong: Readable, Writable {
   public init(
   ) {
   }

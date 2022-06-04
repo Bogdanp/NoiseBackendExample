@@ -8,29 +8,23 @@ let ARCH = "x86_64"
 let ARCH = "arm64"
 #endif
 
-fileprivate struct WrappedRequest {
-  let id: Int64
-  let fut: Future<Record>
-  let time = DispatchTime.now()
-}
-
 struct BackendStats {
   let totalRequests: UInt64
   let totalWaitNanos: UInt64
 }
 
 class Backend {
-  let ip = Pipe() // in  from Racket's perspective
-  let op = Pipe() // out from Racket's perspective
+  private let ip = Pipe() // in  from Racket's perspective
+  private let op = Pipe() // out from Racket's perspective
 
-  let out: OutputPort!
-  let inp: InputPort!
-  let mu = DispatchSemaphore(value: 1)
-  var seq = Int64(0)
-  fileprivate var pending = [Int64: WrappedRequest]()
+  private let out: OutputPort!
+  private let inp: InputPort!
+  private let mu = DispatchSemaphore(value: 1)
+  private var seq = UInt64(0)
+  fileprivate var pending = [UInt64: WrappedRequest]()
 
-  var totalRequests = UInt64(0)
-  var totalWaitNanos = UInt64(0)
+  private var totalRequests = UInt64(0)
+  private var totalWaitNanos = UInt64(0)
 
   init() {
     out = OutputPort(withHandle: ip.fileHandleForWriting)
@@ -52,6 +46,7 @@ class Backend {
       let ifd = Val.fixnum(Int(ip.fileHandleForReading.fileDescriptor))
       let ofd = Val.fixnum(Int(op.fileHandleForWriting.fileDescriptor))
       let _ = serve.apply(Val.cons(ifd, Val.cons(ofd, Val.null)))!
+      preconditionFailure("Racket server exited")
     }
   }
 
@@ -74,7 +69,7 @@ class Backend {
         totalRequests += 1
         totalWaitNanos += DispatchTime.now().uptimeNanoseconds - req.time.uptimeNanoseconds
       default:
-        continue
+        preconditionFailure("received unexpected response data: \(res)")
       }
     }
   }
@@ -108,4 +103,10 @@ class Backend {
       totalWaitNanos: totalWaitNanos
     )
   }
+}
+
+fileprivate struct WrappedRequest {
+  let id: UInt64
+  let fut: Future<Record>
+  let time = DispatchTime.now()
 }

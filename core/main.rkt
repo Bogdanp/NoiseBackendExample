@@ -9,11 +9,11 @@
  (rename-out [serve/fds serve]))
 
 (define-record Request #x00
-  [id Varint integer?]
+  [id UVarint integer?]
   [data Record any/c])
 
 (define-record Response #x01
-  [id Varint integer?]
+  [id UVarint integer?]
   [data Record any/c])
 
 (define-record Ping #x02)

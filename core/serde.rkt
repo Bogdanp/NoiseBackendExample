@@ -268,7 +268,7 @@
   (fprintf out "// This file was automatically generated.~n")
   (fprintf out "import Foundation~n~n")
 
-  (fprintf out "public enum Record: Readable, Writeable {~n")
+  (fprintf out "public enum Record: Readable, Writable {~n")
   (define sorted-ids (sort (hash-keys record-infos) <))
   (for ([id (in-list sorted-ids)])
     (define r (hash-ref record-infos id))
@@ -310,7 +310,7 @@
 
 (define (write-record-code r [out (current-output-port)])
   (match-define (record-info id name _constructor fields) r)
-  (fprintf out "public struct ~a: Readable, Writeable {~n" name)
+  (fprintf out "public struct ~a: Readable, Writable {~n" name)
   (for ([f (in-list fields)])
     (fprintf out
              "  public let ~a: ~a~n"
