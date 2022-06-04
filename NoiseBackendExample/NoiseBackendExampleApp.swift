@@ -1,10 +1,3 @@
-//
-//  NoiseBackendExampleApp.swift
-//  NoiseBackendExample
-//
-//  Created by Bogdan Popa on 29.05.2022.
-//
-
 import SwiftUI
 
 @main
@@ -13,9 +6,13 @@ struct NoiseBackendExampleApp: App {
 
   var body: some Scene {
     WindowGroup {
-      ContentView {
-        print(b.ping())
-      }
+      ContentView(
+        pingAction: {
+          print(b.ping().wait()!)
+        }, statsAction: {
+          print(b.stats())
+        }
+      )
       .frame(width: 800.0, height: 600.0)
     }
   }

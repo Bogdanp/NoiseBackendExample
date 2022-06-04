@@ -6,6 +6,10 @@ extension Bool {
     let _ = data.withUnsafeMutableBytes { inp.read($0, count: 1) }
     return data[0] == 1
   }
+
+  func write(to out: OutputPort) {
+    out.write(contentsOf: Data([self ? 1 : 0]))
+  }
 }
 
 typealias Varint = Int64
