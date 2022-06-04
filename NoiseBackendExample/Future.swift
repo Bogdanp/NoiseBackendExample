@@ -7,8 +7,8 @@ enum FutureWaitResult<R> {
 }
 
 class Future<T> {
-  let mu = DispatchSemaphore(value: 1)
-  var waiters = [DispatchSemaphore]()
+  private let mu = DispatchSemaphore(value: 1)
+  private var waiters = [DispatchSemaphore]()
   private var data: T? = nil
 
   func resolve(with data: T) {
