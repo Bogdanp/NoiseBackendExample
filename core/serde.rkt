@@ -248,7 +248,7 @@
   (fprintf out "// This file was automatically generated.~n")
   (fprintf out "import Foundation~n~n")
 
-  (fprintf out "public enum Record {~n")
+  (fprintf out "public enum Record: Readable, Writeable {~n")
   (define sorted-ids (sort (hash-keys record-infos) symbol<?))
   (for ([id (in-list sorted-ids)])
     (define r (hash-ref record-infos id))
@@ -258,17 +258,17 @@
           ""))
     (fprintf out " ~a case ~a(~a)~n" maybe-indirect (case-id id) id))
 
-  (fprintf out "  public static func read(from inp: InputPort, using data: inout Data) -> Record? {~n")
-  (fprintf out "    guard let sym = Symbol.read(from: inp, using: &data) else {~n")
+  (fprintf out "  public static func read(from inp: InputPort, using buf: inout Data) -> Record? {~n")
+  (fprintf out "    guard let sym = Symbol.read(from: inp, using: &buf) else {~n")
   (fprintf out "      return nil~n")
   (fprintf out "    }~n")
-  (fprintf out "    guard let _ = Varint.read(from: inp, using: &data) else {~n")
+  (fprintf out "    guard let _ = Varint.read(from: inp, using: &buf) else {~n")
   (fprintf out "      return nil~n")
   (fprintf out "    }~n")
   (fprintf out "    switch sym {~n")
   (for ([id (in-list sorted-ids)])
     (fprintf out "    case \"~a\":~n" id)
-    (fprintf out "      return .~a(~a.read(from: inp, using: &data))~n" (case-id id) id))
+    (fprintf out "      return .~a(~a.read(from: inp, using: &buf)!)~n" (case-id id) id))
   (fprintf out "    default:~n")
   (fprintf out "      return nil~n")
   (fprintf out "    }~n")
@@ -288,7 +288,7 @@
 
 (define (write-record-code r [out (current-output-port)])
   (match-define (record-info id _constructor _version fields) r)
-  (fprintf out "public struct ~a {~n" id)
+  (fprintf out "public struct ~a: Readable, Writeable {~n" id)
   (for ([f (in-list fields)])
     (fprintf out
              "  public let ~a: ~a~n"
@@ -309,16 +309,14 @@
     (fprintf out "    self.~a = ~a~n" id id))
   (fprintf out "  }~n")
 
-  (fprintf out "  public static func read(from inp: InputPort, using data: inout Data) -> ~a {~n" id)
+  (fprintf out "  public static func read(from inp: InputPort, using buf: inout Data) -> ~a? {~n" id)
   (fprintf out "    return ~a(~n" id)
   (for ([(f idx) (in-indexed (in-list fields))])
     (define last? (= idx (sub1 len)))
     (define maybe-comma (if last? "" ", "))
-    (fprintf out
-             "      ~a: ~a.read(from: inp, using: &data)!~a~n"
-             (record-field-id f)
-             (swift-type (record-field-type f))
-             maybe-comma))
+    (define id (record-field-id f))
+    (define type (swift-type (record-field-type f)))
+    (fprintf out "      ~a: ~a.read(from: inp, using: &buf)!~a~n" id type maybe-comma))
   (fprintf out "    )~n")
   (fprintf out "  }~n")
 

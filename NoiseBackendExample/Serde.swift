@@ -1,6 +1,14 @@
 import Foundation
 
-extension Bool {
+public protocol Readable where Self: Equatable {
+  static func read(from inp: InputPort, using buf: inout Data) -> Self?
+}
+
+public protocol Writeable where Self: Equatable {
+  func write(to out: OutputPort)
+}
+
+extension Bool: Readable, Writeable {
   public static func read(from inp: InputPort, using buf: inout Data) -> Bool? {
     return inp.readByte() == 1
   }
@@ -10,7 +18,7 @@ extension Bool {
   }
 }
 
-extension Data {
+extension Data: Readable, Writeable {
   public static func read(from inp: InputPort, using buf: inout Data) -> Data? {
     guard let vlen = Varint.read(from: inp, using: &buf) else {
       return nil
@@ -35,7 +43,7 @@ extension Data {
 
 public typealias Varint = Int64
 
-extension Varint {
+extension Varint: Readable, Writeable {
   public static func read(from inp: InputPort, using buf: inout Data) -> Varint? {
     var s = Varint(0)
     var n = Varint(0)
@@ -74,7 +82,7 @@ extension Varint {
   }
 }
 
-extension String {
+extension String: Readable, Writeable {
   public static func read(from inp: InputPort, using buf: inout Data) -> String? {
     guard let vlen = Varint.read(from: inp, using: &buf) else {
       return nil
@@ -103,8 +111,8 @@ extension String {
 
 typealias Symbol = String
 
-extension Array where Element == Record {
-  public static func read(from inp: InputPort, using buf: inout Data) -> [Record]? {
+extension Array where Element: Readable, Element: Writeable {
+  public static func read(from inp: InputPort, using buf: inout Data) -> [Element]? {
     guard let len = Varint.read(from: inp, using: &buf) else {
       return nil
     }
@@ -112,9 +120,9 @@ extension Array where Element == Record {
     if len == 0 {
       return []
     }
-    var res = [Record]()
+    var res = [Element]()
     for _ in 0..<len {
-      guard let r = Record.read(from: inp, using: &buf) else {
+      guard let r = Element.read(from: inp, using: &buf) else {
         return nil
       }
       res.append(r)

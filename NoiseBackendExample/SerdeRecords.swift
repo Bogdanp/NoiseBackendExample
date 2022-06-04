@@ -1,27 +1,27 @@
 // This file was automatically generated.
 import Foundation
 
-public enum Record {
+public enum Record: Readable, Writeable {
   case ping(Ping)
   case pong(Pong)
   indirect case request(Request)
   indirect case response(Response)
-  public static func read(from inp: InputPort, using data: inout Data) -> Record? {
-    guard let sym = Symbol.read(from: inp, using: &data) else {
+  public static func read(from inp: InputPort, using buf: inout Data) -> Record? {
+    guard let sym = Symbol.read(from: inp, using: &buf) else {
       return nil
     }
-    guard let _ = Varint.read(from: inp, using: &data) else {
+    guard let _ = Varint.read(from: inp, using: &buf) else {
       return nil
     }
     switch sym {
     case "Ping":
-      return .ping(Ping.read(from: inp, using: &data))
+      return .ping(Ping.read(from: inp, using: &buf)!)
     case "Pong":
-      return .pong(Pong.read(from: inp, using: &data))
+      return .pong(Pong.read(from: inp, using: &buf)!)
     case "Request":
-      return .request(Request.read(from: inp, using: &data))
+      return .request(Request.read(from: inp, using: &buf)!)
     case "Response":
-      return .response(Response.read(from: inp, using: &data))
+      return .response(Response.read(from: inp, using: &buf)!)
     default:
       return nil
     }
@@ -35,11 +35,11 @@ public enum Record {
     }
   }
 }
-public struct Ping {
+public struct Ping: Readable, Writeable {
   public init(
   ) {
   }
-  public static func read(from inp: InputPort, using data: inout Data) -> Ping {
+  public static func read(from inp: InputPort, using buf: inout Data) -> Ping? {
     return Ping(
     )
   }
@@ -48,11 +48,11 @@ public struct Ping {
     Varint(0).write(to: out)
   }
 }
-public struct Pong {
+public struct Pong: Readable, Writeable {
   public init(
   ) {
   }
-  public static func read(from inp: InputPort, using data: inout Data) -> Pong {
+  public static func read(from inp: InputPort, using buf: inout Data) -> Pong? {
     return Pong(
     )
   }
@@ -61,7 +61,7 @@ public struct Pong {
     Varint(0).write(to: out)
   }
 }
-public struct Request {
+public struct Request: Readable, Writeable {
   public let id: Varint
   public let data: Record
   public init(
@@ -71,10 +71,10 @@ public struct Request {
     self.id = id
     self.data = data
   }
-  public static func read(from inp: InputPort, using data: inout Data) -> Request {
+  public static func read(from inp: InputPort, using buf: inout Data) -> Request? {
     return Request(
-      id: Varint.read(from: inp, using: &data)!, 
-      data: Record.read(from: inp, using: &data)!
+      id: Varint.read(from: inp, using: &buf)!, 
+      data: Record.read(from: inp, using: &buf)!
     )
   }
   public func write(to out: OutputPort) {
@@ -84,7 +84,7 @@ public struct Request {
     data.write(to: out)
   }
 }
-public struct Response {
+public struct Response: Readable, Writeable {
   public let id: Varint
   public let data: Record
   public init(
@@ -94,10 +94,10 @@ public struct Response {
     self.id = id
     self.data = data
   }
-  public static func read(from inp: InputPort, using data: inout Data) -> Response {
+  public static func read(from inp: InputPort, using buf: inout Data) -> Response? {
     return Response(
-      id: Varint.read(from: inp, using: &data)!, 
-      data: Record.read(from: inp, using: &data)!
+      id: Varint.read(from: inp, using: &buf)!, 
+      data: Record.read(from: inp, using: &buf)!
     )
   }
   public func write(to out: OutputPort) {
