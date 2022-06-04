@@ -17,18 +17,15 @@ class Backend {
   private let ip = Pipe() // in  from Racket's perspective
   private let op = Pipe() // out from Racket's perspective
 
+  private let mu = DispatchSemaphore(value: 1) // mu guards everything below here
   private let out: OutputPort!
-  private let inp: InputPort!
-  private let mu = DispatchSemaphore(value: 1)
   private var seq = UInt64(0)
   fileprivate var pending = [UInt64: WrappedRequest]()
-
   private var totalRequests = UInt64(0)
   private var totalWaitNanos = UInt64(0)
 
   init() {
     out = OutputPort(withHandle: ip.fileHandleForWriting)
-    inp = InputPort(withHandle: op.fileHandleForReading)
     Thread.detachNewThread {
       self.serve()
     }
@@ -51,7 +48,8 @@ class Backend {
   }
 
   private func read() {
-    var buf = Data(count: 64*1024)
+    let inp = InputPort(withHandle: op.fileHandleForReading)
+    var buf = Data(count: 8*1024) // will grow as needed
     while true {
       guard let res = Record.read(from: inp, using: &buf) else {
         continue
@@ -81,6 +79,7 @@ class Backend {
     let req = Request(id: id, data: data)
     seq += 1
     req.write(to: out)
+    out.flush()
     let fut = Future<Record>()
     pending[id] = WrappedRequest(id: id, fut: fut)
     return fut

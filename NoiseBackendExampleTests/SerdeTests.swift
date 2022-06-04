@@ -9,6 +9,7 @@ class SerdeTests: XCTestCase {
       let inp = InputPort(withHandle: p.fileHandleForReading, andBufSize: bufsize)
       let out = OutputPort(withHandle: p.fileHandleForWriting)
       out.write(contentsOf: "hello".data(using: .utf8)!)
+      out.flush()
       var buf = Data(count: 8192)
       let nread = inp.read(&buf, count: 5)
       XCTAssertEqual(5, nread)
@@ -27,6 +28,7 @@ class SerdeTests: XCTestCase {
     var buf = Data(count: 8192)
     for n in tests {
       n.write(to: out)
+      out.flush()
       XCTAssertEqual(n, Varint.read(from: inp, using: &buf))
     }
   }
@@ -39,6 +41,7 @@ class SerdeTests: XCTestCase {
     var buf = Data(count: 8192)
     for n in tests {
       n.write(to: out)
+      out.flush()
       XCTAssertEqual(n, UVarint.read(from: inp, using: &buf))
     }
   }
@@ -53,11 +56,12 @@ class SerdeTests: XCTestCase {
     ]
     var buf = Data(count: 8192)
     data.write(to: out)
+    out.flush()
     let res = [Record].read(from: inp, using: &buf)!
     XCTAssertEqual(data, res)
   }
 
-  func testRecordRoundtripPerformance() throws {
+  func testRecordRoundtripPerformance() {
     let p = Pipe()
     let req = Request(id: 1, data: .ping(Ping()))
     let inp = InputPort(withHandle: p.fileHandleForReading)
@@ -67,11 +71,24 @@ class SerdeTests: XCTestCase {
     opts.iterationCount = 1000
     measure(options: opts) {
       req.write(to: out)
+      out.flush()
       let _ = Record.read(from: inp, using: &buf)
     }
   }
 
-  func testStringRoundtripPerformance() throws {
+  func testStringSmallBuffer() {
+    let p = Pipe()
+    let s = "hello, world!"
+    let inp = InputPort(withHandle: p.fileHandleForReading)
+    let out = OutputPort(withHandle: p.fileHandleForWriting)
+    var buf = Data(count: 5)
+    s.write(to: out)
+    out.flush()
+    XCTAssertEqual(s, String.read(from: inp, using: &buf))
+    XCTAssertEqual(s.count, buf.count)
+  }
+
+  func testStringRoundtripPerformance() {
     let p = Pipe()
     let s = "hello, world!"
     let inp = InputPort(withHandle: p.fileHandleForReading)
@@ -81,6 +98,7 @@ class SerdeTests: XCTestCase {
     opts.iterationCount = 1000
     measure(options: opts) {
       s.write(to: out)
+      out.flush()
       let _ = String.read(from: inp, using: &buf)
     }
   }
