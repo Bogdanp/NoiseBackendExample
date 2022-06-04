@@ -35,6 +35,18 @@
 					<real>40.000000</real>
 				</dict>
 			</dict>
+			<key>testStringRoundtripPerformance()</key>
+			<dict>
+				<key>com.apple.dt.XCTMetric_Clock.time.monotonic</key>
+				<dict>
+					<key>baselineAverage</key>
+					<real>0.000015</real>
+					<key>baselineIntegrationDisplayName</key>
+					<string>Local Baseline</string>
+					<key>maxPercentRelativeStandardDeviation</key>
+					<real>40.000000</real>
+				</dict>
+			</dict>
 		</dict>
 	</dict>
 </dict>

@@ -57,7 +57,7 @@ class SerdeTests: XCTestCase {
     XCTAssertEqual(data, res)
   }
 
-  func testRoundtripPerformance() throws {
+  func testRecordRoundtripPerformance() throws {
     let p = Pipe()
     let req = Request(id: 1, data: .ping(Ping()))
     let inp = InputPort(withHandle: p.fileHandleForReading)
@@ -68,6 +68,20 @@ class SerdeTests: XCTestCase {
     measure(options: opts) {
       req.write(to: out)
       let _ = Record.read(from: inp, using: &buf)
+    }
+  }
+
+  func testStringRoundtripPerformance() throws {
+    let p = Pipe()
+    let s = "hello, world!"
+    let inp = InputPort(withHandle: p.fileHandleForReading)
+    let out = OutputPort(withHandle: p.fileHandleForWriting)
+    var buf = Data(count: 8192)
+    let opts = XCTMeasureOptions()
+    opts.iterationCount = 1000
+    measure(options: opts) {
+      s.write(to: out)
+      let _ = String.read(from: inp, using: &buf)
     }
   }
 }

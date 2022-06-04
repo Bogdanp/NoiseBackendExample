@@ -23,7 +23,7 @@ class Future<T> {
 
   func map<R>(_ proc: @escaping (T) -> R) -> Future<R> {
     let fut = Future<R>()
-    DispatchQueue.global(qos: .background).async {
+    DispatchQueue.global(qos: .default).async {
       fut.resolve(with: proc(self.wait()))
     }
     return fut
