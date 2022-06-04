@@ -31,6 +31,18 @@ class SerdeTests: XCTestCase {
     }
   }
 
+  func testUVarintRoundtrip() {
+    let p = Pipe()
+    let inp = InputPort(withHandle: p.fileHandleForReading)
+    let out = OutputPort(withHandle: p.fileHandleForWriting)
+    let tests: [UVarint] = [0x0, 0x1, 0x7F, 0x80, 0xFF, 0xFFF, 0xFFFFF]
+    var buf = Data(count: 8192)
+    for n in tests {
+      n.write(to: out)
+      XCTAssertEqual(n, UVarint.read(from: inp, using: &buf))
+    }
+  }
+
   func testArrayRoundtrip() {
     let p = Pipe()
     let inp = InputPort(withHandle: p.fileHandleForReading)

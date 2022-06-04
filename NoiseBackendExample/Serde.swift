@@ -82,6 +82,44 @@ extension Varint: Readable, Writeable {
   }
 }
 
+public typealias UVarint = UInt64
+
+extension UVarint: Readable, Writeable {
+  public static func read(from inp: InputPort, using buf: inout Data) -> UVarint? {
+    var s = UVarint(0)
+    var n = UVarint(0)
+    while true {
+      guard let b = inp.readByte() else {
+        return nil
+      }
+      let x = UInt64(b)
+      if x & 0x80 == 0 {
+        n += x << s
+        break
+      }
+      n += (x & 0x7F) << s
+      s += 7
+    }
+    return n
+  }
+
+  public func write(to out: OutputPort) {
+    var data = Data(count: 0)
+    var n = self
+    while true {
+      let (q, r) = n.quotientAndRemainder(dividingBy: 0x80)
+      if q == 0 {
+        data.append(UInt8(truncatingIfNeeded: r))
+        break
+      } else {
+        data.append(UInt8(truncatingIfNeeded: r|0x80))
+        n = q
+      }
+    }
+    out.write(contentsOf: data)
+  }
+}
+
 extension String: Readable, Writeable {
   public static func read(from inp: InputPort, using buf: inout Data) -> String? {
     guard let vlen = Varint.read(from: inp, using: &buf) else {

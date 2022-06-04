@@ -8,16 +8,16 @@
 (provide
  (rename-out [serve/fds serve]))
 
-(define-record Ping)
-(define-record Pong)
-
-(define-record Request
+(define-record Request #x00
   [id Varint integer?]
   [data Record any/c])
 
-(define-record Response
+(define-record Response #x01
   [id Varint integer?]
   [data Record any/c])
+
+(define-record Ping #x02)
+(define-record Pong #x03)
 
 (define (serve/fds in-fd out-fd)
   (module-cache-clear!)
