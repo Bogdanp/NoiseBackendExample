@@ -8,4 +8,4 @@ NoiseBackendExample/resources/core-${ARCH}.zo: core/*.rkt
 	raco ctool --mods $@ core/main.rkt
 
 NoiseBackendExample/Record.swift: core/*.rkt
-	racket core/main.rkt > $@
+	raco noise-serde-codegen core/main.rkt > $@

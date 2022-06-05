@@ -1,9 +1,9 @@
 #lang racket/base
 
 (require ffi/unsafe/port
+         noise/serde
          racket/contract
-         racket/match
-         "serde.rkt")
+         racket/match)
 
 (provide
  (rename-out [serve/fds serve]))
@@ -39,6 +39,3 @@
       [_
        (eprintf "unexpected message: ~e~n" msg)
        (loop)])))
-
-(module+ main
-  (write-Swift-code))

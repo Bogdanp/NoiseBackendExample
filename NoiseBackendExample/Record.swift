@@ -1,5 +1,6 @@
 // This file was automatically generated.
 import Foundation
+import NoiseSerde
 
 public enum Record: Readable, Writable {
   indirect case request(Request)
@@ -44,7 +45,7 @@ public struct Request: Readable, Writable {
   }
   public static func read(from inp: InputPort, using buf: inout Data) -> Request? {
     return Request(
-      id: UVarint.read(from: inp, using: &buf)!,
+      id: UVarint.read(from: inp, using: &buf)!, 
       data: Record.read(from: inp, using: &buf)!
     )
   }
@@ -66,7 +67,7 @@ public struct Response: Readable, Writable {
   }
   public static func read(from inp: InputPort, using buf: inout Data) -> Response? {
     return Response(
-      id: UVarint.read(from: inp, using: &buf)!,
+      id: UVarint.read(from: inp, using: &buf)!, 
       data: Record.read(from: inp, using: &buf)!
     )
   }

@@ -1,6 +1,7 @@
 import Dispatch
 import Foundation
 import Noise
+import NoiseSerde
 
 #if arch(x86_64)
 let ARCH = "x86_64"
