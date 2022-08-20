@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		4344A85B284A6B4C0031D0C8 /* Record.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4344A859284A6B4C0031D0C8 /* Record.swift */; };
-		4344A85E284B22100031D0C8 /* Future.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4344A85D284B22100031D0C8 /* Future.swift */; };
 		4344A86F284CE0110031D0C8 /* NoiseSerde in Frameworks */ = {isa = PBXBuildFile; productRef = 4344A86E284CE0110031D0C8 /* NoiseSerde */; };
 		4350F31F2843653A00BA29DC /* NoiseBackendExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4350F31E2843653A00BA29DC /* NoiseBackendExampleApp.swift */; };
 		4350F3212843653A00BA29DC /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4350F3202843653A00BA29DC /* ContentView.swift */; };
@@ -16,7 +15,7 @@
 		4350F3262843653C00BA29DC /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4350F3252843653C00BA29DC /* Preview Assets.xcassets */; };
 		4350F3302843666800BA29DC /* resources in Resources */ = {isa = PBXBuildFile; fileRef = 4350F32F2843666800BA29DC /* resources */; };
 		4350F3332843666E00BA29DC /* Noise in Frameworks */ = {isa = PBXBuildFile; productRef = 4350F3322843666E00BA29DC /* Noise */; };
-		4350F3352843667800BA29DC /* Backend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4350F3342843667800BA29DC /* Backend.swift */; };
+		43EF9A5728B11F9D00E45008 /* NoiseBackend in Frameworks */ = {isa = PBXBuildFile; productRef = 43EF9A5628B11F9D00E45008 /* NoiseBackend */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,7 +30,6 @@
 
 /* Begin PBXFileReference section */
 		4344A859284A6B4C0031D0C8 /* Record.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Record.swift; sourceTree = "<group>"; };
-		4344A85D284B22100031D0C8 /* Future.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Future.swift; sourceTree = "<group>"; };
 		4344A865284B46580031D0C8 /* NoiseBackendExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NoiseBackendExampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4350F31B2843653A00BA29DC /* NoiseBackendExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NoiseBackendExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4350F31E2843653A00BA29DC /* NoiseBackendExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoiseBackendExampleApp.swift; sourceTree = "<group>"; };
@@ -41,7 +39,6 @@
 		4350F3272843653C00BA29DC /* NoiseBackendExample.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NoiseBackendExample.entitlements; sourceTree = "<group>"; };
 		4350F32E2843654700BA29DC /* Noise */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Noise; path = ../Noise; sourceTree = "<group>"; };
 		4350F32F2843666800BA29DC /* resources */ = {isa = PBXFileReference; lastKnownFileType = folder; path = resources; sourceTree = "<group>"; };
-		4350F3342843667800BA29DC /* Backend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Backend.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +54,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4350F3332843666E00BA29DC /* Noise in Frameworks */,
+				43EF9A5728B11F9D00E45008 /* NoiseBackend in Frameworks */,
 				4344A86F284CE0110031D0C8 /* NoiseSerde in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -87,9 +85,7 @@
 			isa = PBXGroup;
 			children = (
 				4350F3222843653C00BA29DC /* Assets.xcassets */,
-				4350F3342843667800BA29DC /* Backend.swift */,
 				4350F3202843653A00BA29DC /* ContentView.swift */,
-				4344A85D284B22100031D0C8 /* Future.swift */,
 				4350F3272843653C00BA29DC /* NoiseBackendExample.entitlements */,
 				4350F31E2843653A00BA29DC /* NoiseBackendExampleApp.swift */,
 				4350F3242843653C00BA29DC /* Preview Content */,
@@ -159,6 +155,7 @@
 			packageProductDependencies = (
 				4350F3322843666E00BA29DC /* Noise */,
 				4344A86E284CE0110031D0C8 /* NoiseSerde */,
+				43EF9A5628B11F9D00E45008 /* NoiseBackend */,
 			);
 			productName = NoiseBackendExample;
 			productReference = 4350F31B2843653A00BA29DC /* NoiseBackendExample.app */;
@@ -234,11 +231,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4344A85E284B22100031D0C8 /* Future.swift in Sources */,
 				4350F3212843653A00BA29DC /* ContentView.swift in Sources */,
 				4350F31F2843653A00BA29DC /* NoiseBackendExampleApp.swift in Sources */,
 				4344A85B284A6B4C0031D0C8 /* Record.swift in Sources */,
-				4350F3352843667800BA29DC /* Backend.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -494,6 +489,10 @@
 		4350F3322843666E00BA29DC /* Noise */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Noise;
+		};
+		43EF9A5628B11F9D00E45008 /* NoiseBackend */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = NoiseBackend;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

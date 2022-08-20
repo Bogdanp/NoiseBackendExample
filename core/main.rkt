@@ -1,41 +1,27 @@
 #lang racket/base
 
-(require ffi/unsafe/port
+(require noise/backend
          noise/serde
-         racket/contract
          racket/match)
 
 (provide
- (rename-out [serve/fds serve]))
+ main)
 
-(define-record Request #x00
-  [id UVarint integer?]
-  [data Record any/c])
+(define-record Ping #x00)
+(define-record Pong #x01)
 
-(define-record Response #x01
-  [id UVarint integer?]
-  [data Record any/c])
+(define (app msg)
+  (match msg
+    [(Ping)
+     (Pong)]
 
-(define-record Ping #x02)
-(define-record Pong #x03)
+    [_
+     (error 'app "unexpected message: ~e" msg)]))
 
-(define (serve/fds in-fd out-fd)
+(define (main in-fd out-fd)
   (module-cache-clear!)
   (collect-garbage)
-  (serve
-   (unsafe-file-descriptor->port in-fd 'in '(read))
-   (unsafe-file-descriptor->port out-fd 'out '(write))))
-
-(define (serve in out)
-  (let loop ()
-    (define msg
-      (read-record in))
-    (match msg
-      [(Request id (Ping))
-       (write-record (Response id (Pong)) out)
-       (flush-output out)
-       (loop)]
-
-      [_
-       (eprintf "unexpected message: ~e~n" msg)
-       (loop)])))
+  (define stop
+    (serve in-fd out-fd app))
+  (with-handlers ([exn:break? (λ (_) (stop))])
+    (sync never-evt)))
