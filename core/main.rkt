@@ -7,8 +7,8 @@
 (provide
  main)
 
-(define-record Ping #x00)
-(define-record Pong #x01)
+(define-record Ping)
+(define-record Pong)
 
 (define (app msg)
   (match msg
