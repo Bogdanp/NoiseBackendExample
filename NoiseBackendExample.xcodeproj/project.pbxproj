@@ -143,6 +143,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4350F32A2843653C00BA29DC /* Build configuration list for PBXNativeTarget "NoiseBackendExample" */;
 			buildPhases = (
+				431880FB28B4D2FD00723B33 /* Build Racket Code & Records */,
 				4350F3172843653A00BA29DC /* Sources */,
 				4350F3182843653A00BA29DC /* Frameworks */,
 				4350F3192843653A00BA29DC /* Resources */,
@@ -218,6 +219,29 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		431880FB28B4D2FD00723B33 /* Build Racket Code & Records */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Build Racket Code & Records";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "make
+";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		4344A861284B46580031D0C8 /* Sources */ = {
