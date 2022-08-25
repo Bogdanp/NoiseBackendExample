@@ -1,3 +1,6 @@
+# This makefile assumes it will be run by Xcode and it depends on
+# environment variables that Xcode sets.
+
 ARCH=$(shell uname -m)
 
 APP_SRC=NoiseBackendExample
