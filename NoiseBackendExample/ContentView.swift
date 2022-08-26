@@ -1,17 +1,9 @@
 import SwiftUI
 
 struct ContentView: View {
-  let pingAction: () -> Void
-  let statsAction: () -> Void
+  var stories: [Story]
 
   var body: some View {
-    HStack {
-      Button("Ping") {
-        pingAction()
-      }
-      Button("Stats") {
-        statsAction()
-      }
-    }
+    StoryList(stories: stories)
   }
 }

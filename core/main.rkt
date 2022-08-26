@@ -1,15 +1,17 @@
 #lang racket/base
 
 (require noise/backend
-         noise/serde)
+         noise/serde
+         (prefix-in hn: "hn.rkt"))
 
 (provide
  main)
 
-(define-record Pong)
+(define-rpc (get-top-stories : (Listof hn:Story))
+  (hn:get-top-stories))
 
-(define-rpc (ping : Pong)
-  (Pong))
+(define-rpc (get-story-comments [for-story id : UVarint] : (Listof hn:Comment))
+  (hn:get-comments id))
 
 (define (main in-fd out-fd)
   (module-cache-clear!)
