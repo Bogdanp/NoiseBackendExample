@@ -1,27 +1,20 @@
 #lang racket/base
 
 (require noise/backend
-         noise/serde
-         racket/match)
+         noise/serde)
 
 (provide
  main)
 
-(define-record Ping)
 (define-record Pong)
 
-(define (app msg)
-  (match msg
-    [(Ping)
-     (Pong)]
-
-    [_
-     (error 'app "unexpected message: ~e" msg)]))
+(define-rpc (ping : Pong)
+  (Pong))
 
 (define (main in-fd out-fd)
   (module-cache-clear!)
   (collect-garbage)
   (define stop
-    (serve in-fd out-fd app))
+    (serve in-fd out-fd))
   (with-handlers ([exn:break? (λ (_) (stop))])
     (sync never-evt)))

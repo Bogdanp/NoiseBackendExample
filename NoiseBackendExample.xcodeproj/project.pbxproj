@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4344A85B284A6B4C0031D0C8 /* Record.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4344A859284A6B4C0031D0C8 /* Record.swift */; };
+		4344A85B284A6B4C0031D0C8 /* Backend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4344A859284A6B4C0031D0C8 /* Backend.swift */; };
 		4344A86F284CE0110031D0C8 /* NoiseSerde in Frameworks */ = {isa = PBXBuildFile; productRef = 4344A86E284CE0110031D0C8 /* NoiseSerde */; };
 		4350F31F2843653A00BA29DC /* NoiseBackendExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4350F31E2843653A00BA29DC /* NoiseBackendExampleApp.swift */; };
 		4350F3212843653A00BA29DC /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4350F3202843653A00BA29DC /* ContentView.swift */; };
@@ -29,7 +29,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		4344A859284A6B4C0031D0C8 /* Record.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Record.swift; sourceTree = "<group>"; };
+		4344A859284A6B4C0031D0C8 /* Backend.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Backend.swift; sourceTree = "<group>"; };
 		4344A865284B46580031D0C8 /* NoiseBackendExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NoiseBackendExampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4350F31B2843653A00BA29DC /* NoiseBackendExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NoiseBackendExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4350F31E2843653A00BA29DC /* NoiseBackendExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoiseBackendExampleApp.swift; sourceTree = "<group>"; };
@@ -85,11 +85,11 @@
 			isa = PBXGroup;
 			children = (
 				4350F3222843653C00BA29DC /* Assets.xcassets */,
+				4344A859284A6B4C0031D0C8 /* Backend.swift */,
 				4350F3202843653A00BA29DC /* ContentView.swift */,
 				4350F3272843653C00BA29DC /* NoiseBackendExample.entitlements */,
 				4350F31E2843653A00BA29DC /* NoiseBackendExampleApp.swift */,
 				4350F3242843653C00BA29DC /* Preview Content */,
-				4344A859284A6B4C0031D0C8 /* Record.swift */,
 				4350F32F2843666800BA29DC /* resources */,
 			);
 			path = NoiseBackendExample;
@@ -143,7 +143,8 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4350F32A2843653C00BA29DC /* Build configuration list for PBXNativeTarget "NoiseBackendExample" */;
 			buildPhases = (
-				431880FB28B4D2FD00723B33 /* Build Racket Code & Records */,
+				431880FB28B4D2FD00723B33 /* Build Racket Code & Serde */,
+				43CB0DF828B89ECD0071A54E /* Sign Embedded Dynamic Libraries */,
 				4350F3172843653A00BA29DC /* Sources */,
 				4350F3182843653A00BA29DC /* Frameworks */,
 				4350F3192843653A00BA29DC /* Resources */,
@@ -221,7 +222,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		431880FB28B4D2FD00723B33 /* Build Racket Code & Records */ = {
+		431880FB28B4D2FD00723B33 /* Build Racket Code & Serde */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -231,7 +232,7 @@
 			);
 			inputPaths = (
 			);
-			name = "Build Racket Code & Records";
+			name = "Build Racket Code & Serde";
 			outputFileListPaths = (
 			);
 			outputPaths = (
@@ -240,6 +241,25 @@
 			shellPath = /bin/sh;
 			shellScript = "make
 ";
+		};
+		43CB0DF828B89ECD0071A54E /* Sign Embedded Dynamic Libraries */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Sign Embedded Dynamic Libraries";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "./Bin/sign-dylibs\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -257,7 +277,7 @@
 			files = (
 				4350F3212843653A00BA29DC /* ContentView.swift in Sources */,
 				4350F31F2843653A00BA29DC /* NoiseBackendExampleApp.swift in Sources */,
-				4344A85B284A6B4C0031D0C8 /* Record.swift in Sources */,
+				4344A85B284A6B4C0031D0C8 /* Backend.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
