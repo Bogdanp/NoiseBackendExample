@@ -1,7 +1,8 @@
 import SwiftUI
 
-struct StoryDetail: View {
+struct CommentDetail: View {
   let story: Story
+  let comment: Comment
 
   @EnvironmentObject var model: Model
 
@@ -18,7 +19,7 @@ struct StoryDetail: View {
     }
     .navigationTitle(story.title)
     .onAppear {
-      model.getComments(forItem: story.id) { comments in
+      model.getComments(forItem: comment.id) { comments in
         self.comments = comments
         self.commentsLoading = false
       }

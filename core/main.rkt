@@ -10,7 +10,7 @@
 (define-rpc (get-top-stories : (Listof hn:Story))
   (hn:get-top-stories))
 
-(define-rpc (get-story-comments [for-story id : UVarint] : (Listof hn:Comment))
+(define-rpc (get-comments [for-item id : UVarint] : (Listof hn:Comment))
   (hn:get-comments id))
 
 (define (main in-fd out-fd)

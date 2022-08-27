@@ -2,6 +2,7 @@
 
 (require net/http-easy
          noise/serde
+         racket/date
          racket/format
          racket/promise
          racket/string)
@@ -22,6 +23,8 @@
 
 (define-record Comment
   [id UVarint]
+  [author String]
+  [timestamp String]
   [text String])
 
 (define (get-item id)
@@ -38,7 +41,7 @@
    #:title (hash-ref data 'title)
    #:comments (hash-ref data 'kids null)))
 
-(define (get-top-stories [limit 10])
+(define (get-top-stories [limit 30])
   (define story-ids
     (response-json
      (get (~url "topstories.json"))))
@@ -49,12 +52,34 @@
 (define (get-comment id)
   (define data
     (get-item id))
-  (make-Comment
-   #:id (hash-ref data 'id -1)
-   #:text (hash-ref data 'text "[DELETED]")))
+  (and (not (hash-ref data 'deleted #f))
+       (string=? (hash-ref data 'type "") "comment")
+       (make-Comment
+        #:id (hash-ref data 'id -1)
+        #:author (hash-ref data 'by "<anon>")
+        #:timestamp (date->string (seconds->date (hash-ref data 'time)) #t)
+        #:text (expand-html (hash-ref data 'text "")))))
 
-(define (get-comments story-id)
-  (define story
-    (get-story story-id))
-  (for/list/concurrent ([id (in-list (Story-comments story))])
-    (get-comment id)))
+(define (get-comments item-id)
+  (define data (get-item item-id))
+  (filter values (for/list/concurrent ([id (in-list (hash-ref data 'kids null))])
+                   (get-comment id))))
+
+(define (expand-html text)
+  (expand-html-entities
+   (regexp-replace* #rx"<p>" text "\n")))
+
+(define (expand-html-entities text)
+  (regexp-replace* #rx"&([^;]+);" text (λ (all entity)
+                                         (case entity
+                                           [("amp")  "&"]
+                                           [("gt")   ">"]
+                                           [("lt")   "<"]
+                                           [("quot") "\""]
+                                           [else
+                                            (define maybe-hex-num
+                                              (and (string-prefix? entity "#x")
+                                                   (string->number (substring entity 2) 16)))
+                                            (if maybe-hex-num
+                                                (string (integer->char maybe-hex-num))
+                                                all)]))))

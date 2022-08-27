@@ -25,7 +25,7 @@ class Model: ObservableObject {
     }
   }
 
-  func getComments(forStory id: UVarint, onComplete proc: @escaping ([Comment]) -> Void) {
-    b.getStoryComments(forStory: id).onComplete(proc)
+  func getComments(forItem id: UVarint, onComplete proc: @escaping ([Comment]) -> Void) {
+    b.getComments(forItem: id).onComplete(proc)
   }
 }
