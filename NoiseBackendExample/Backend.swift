@@ -7,24 +7,26 @@ public enum Record: Readable, Writable {
   case comment(Comment)
   case story(Story)
 
-  public static func read(from inp: InputPort, using buf: inout Data) -> Record? {
-    guard let id = UVarint.read(from: inp, using: &buf) else {
-      return nil
-    }
+  public static func read(from inp: InputPort, using buf: inout Data) -> Record {
+    let id = UVarint.read(from: inp, using: &buf)
     switch id {
     case 0x0:
-      return .comment(Comment.read(from: inp, using: &buf)!)
+      return .comment(Comment.read(from: inp, using: &buf))
     case 0x1:
-      return .story(Story.read(from: inp, using: &buf)!)
+      return .story(Story.read(from: inp, using: &buf))
     default:
-      return nil
+      preconditionFailure("Record: unexpected tag \(id)")
     }
   }
 
   public func write(to out: OutputPort) {
     switch self {
-    case .comment(let r): r.write(to: out)
-    case .story(let r): r.write(to: out)
+    case .comment(let r):
+      UVarint(0x0).write(to: out)
+      r.write(to: out)
+    case .story(let r):
+      UVarint(0x1).write(to: out)
+      r.write(to: out)
     }
   }
 }
@@ -47,17 +49,16 @@ public struct Comment: Readable, Writable {
     self.text = text
   }
 
-  public static func read(from inp: InputPort, using buf: inout Data) -> Comment? {
+  public static func read(from inp: InputPort, using buf: inout Data) -> Comment {
     return Comment(
-      id: UVarint.read(from: inp, using: &buf)!,
-      author: String.read(from: inp, using: &buf)!,
-      timestamp: String.read(from: inp, using: &buf)!,
-      text: String.read(from: inp, using: &buf)!
+      id: UVarint.read(from: inp, using: &buf),
+      author: String.read(from: inp, using: &buf),
+      timestamp: String.read(from: inp, using: &buf),
+      text: String.read(from: inp, using: &buf)
     )
   }
 
   public func write(to out: OutputPort) {
-    UVarint(0x0).write(to: out)
     id.write(to: out)
     author.write(to: out)
     timestamp.write(to: out)
@@ -80,16 +81,15 @@ public struct Story: Readable, Writable {
     self.comments = comments
   }
 
-  public static func read(from inp: InputPort, using buf: inout Data) -> Story? {
+  public static func read(from inp: InputPort, using buf: inout Data) -> Story {
     return Story(
-      id: UVarint.read(from: inp, using: &buf)!,
-      title: String.read(from: inp, using: &buf)!,
-      comments: [UVarint].read(from: inp, using: &buf)!
+      id: UVarint.read(from: inp, using: &buf),
+      title: String.read(from: inp, using: &buf),
+      comments: [UVarint].read(from: inp, using: &buf)
     )
   }
 
   public func write(to out: OutputPort) {
-    UVarint(0x1).write(to: out)
     id.write(to: out)
     title.write(to: out)
     comments.write(to: out)
@@ -110,7 +110,7 @@ public class Backend {
         id.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> [Comment] in
-        return [Comment].read(from: inp, using: &buf)!
+        return [Comment].read(from: inp, using: &buf)
       }
     )
   }
@@ -121,7 +121,7 @@ public class Backend {
         UVarint(0x1).write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> [Story] in
-        return [Story].read(from: inp, using: &buf)!
+        return [Story].read(from: inp, using: &buf)
       }
     )
   }
