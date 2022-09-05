@@ -3,34 +3,6 @@ import Foundation
 import NoiseBackend
 import NoiseSerde
 
-public enum Record: Readable, Writable {
-  case comment(Comment)
-  case story(Story)
-
-  public static func read(from inp: InputPort, using buf: inout Data) -> Record {
-    let id = UVarint.read(from: inp, using: &buf)
-    switch id {
-    case 0x0:
-      return .comment(Comment.read(from: inp, using: &buf))
-    case 0x1:
-      return .story(Story.read(from: inp, using: &buf))
-    default:
-      preconditionFailure("Record: unexpected tag \(id)")
-    }
-  }
-
-  public func write(to out: OutputPort) {
-    switch self {
-    case .comment(let r):
-      UVarint(0x0).write(to: out)
-      r.write(to: out)
-    case .story(let r):
-      UVarint(0x1).write(to: out)
-      r.write(to: out)
-    }
-  }
-}
-
 public struct Comment: Readable, Writable {
   public let id: UVarint
   public let author: String
