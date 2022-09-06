@@ -17,15 +17,15 @@
   (format "https://hacker-news.firebaseio.com/v0/~a" (string-join args "/")))
 
 (define-record Story
-  [id UVarint]
-  [title String]
-  [comments (Listof UVarint)])
+  [id : UVarint]
+  [title : String]
+  [comments : (Listof UVarint)])
 
 (define-record Comment
-  [id UVarint]
-  [author String]
-  [timestamp String]
-  [text String])
+  [id : UVarint]
+  [author : String]
+  [timestamp : String]
+  [text : String])
 
 (define (get-item id)
   (define data
