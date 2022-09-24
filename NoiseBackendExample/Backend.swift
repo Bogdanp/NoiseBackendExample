@@ -75,10 +75,10 @@ public class Backend {
     impl = NoiseBackend.Backend(withZo: zo, andMod: mod, andProc: proc)
   }
 
-  public func getComments(forItem id: UVarint) -> Future<[Comment]> {
+  public func getComments(forItem id: UVarint) -> Future<String, [Comment]> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x0).write(to: out)
+        UVarint(0x0000).write(to: out)
         id.write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> [Comment] in
@@ -87,10 +87,10 @@ public class Backend {
     )
   }
 
-  public func getTopStories() -> Future<[Story]> {
+  public func getTopStories() -> Future<String, [Story]> {
     return impl.send(
       writeProc: { (out: OutputPort) in
-        UVarint(0x1).write(to: out)
+        UVarint(0x0001).write(to: out)
       },
       readProc: { (inp: InputPort, buf: inout Data) -> [Story] in
         return [Story].read(from: inp, using: &buf)
