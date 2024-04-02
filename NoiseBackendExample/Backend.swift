@@ -97,4 +97,15 @@ public class Backend {
       }
     )
   }
+
+  public func installCallback(internalWithId id: UVarint, andAddr addr: Varint) -> Future<String, Void> {
+    return impl.send(
+      writeProc: { (out: OutputPort) in
+        UVarint(0x0002).write(to: out)
+        id.write(to: out)
+        addr.write(to: out)
+      },
+      readProc: { (inp: InputPort, buf: inout Data) -> Void in }
+    )
+  }
 }

@@ -3,7 +3,7 @@ ARCH=$(shell uname -m)
 APP_SRC=NoiseBackendExample
 RKT_SRC=core
 
-RESOURCES_PATH=${APP_SRC}/resources
+RESOURCES_PATH=${APP_SRC}/res
 RUNTIME_NAME=runtime-${ARCH}
 RUNTIME_PATH=${RESOURCES_PATH}/${RUNTIME_NAME}
 
@@ -14,7 +14,7 @@ all: ${RESOURCES_PATH}/core-${ARCH}.zo ${APP_SRC}/Backend.swift
 clean:
 	rm -r ${RESOURCES_PATH}
 
-${APP_SRC}/resources/core-${ARCH}.zo: ${RKT_SRC}/*.rkt
+${APP_SRC}/res/core-${ARCH}.zo: ${RKT_SRC}/*.rkt
 	mkdir -p ${RESOURCES_PATH}
 	rm -fr ${RUNTIME_PATH}
 	raco ctool \

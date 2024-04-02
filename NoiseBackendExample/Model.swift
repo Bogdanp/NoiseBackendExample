@@ -12,7 +12,7 @@ let ARCH = "arm64"
 
 class Model: ObservableObject {
   let b = Backend(
-    withZo: Bundle.main.url(forResource: "resources/core-\(ARCH)", withExtension: ".zo")!,
+    withZo: Bundle.main.url(forResource: "res/core-\(ARCH)", withExtension: ".zo")!,
     andMod: "main",
     andProc: "main"
   )
