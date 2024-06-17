@@ -87,6 +87,10 @@ public class Backend {
     )
   }
 
+  public func getComments(forItem id: UVarint) async throws -> [Comment] {
+    return try await FutureUtil.asyncify(getComments(forItem: id))
+  }
+
   public func getTopStories() -> Future<String, [Story]> {
     return impl.send(
       writeProc: { (out: OutputPort) in
@@ -98,6 +102,10 @@ public class Backend {
     )
   }
 
+  public func getTopStories() async throws -> [Story] {
+    return try await FutureUtil.asyncify(getTopStories())
+  }
+
   public func installCallback(internalWithId id: UVarint, andAddr addr: Varint) -> Future<String, Void> {
     return impl.send(
       writeProc: { (out: OutputPort) in
@@ -107,5 +115,9 @@ public class Backend {
       },
       readProc: { (inp: InputPort, buf: inout Data) -> Void in }
     )
+  }
+
+  public func installCallback(internalWithId id: UVarint, andAddr addr: Varint) async throws -> Void {
+    return try await FutureUtil.asyncify(installCallback(internalWithId: id, andAddr: addr))
   }
 }

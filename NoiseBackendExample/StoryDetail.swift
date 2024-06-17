@@ -17,11 +17,9 @@ struct StoryDetail: View {
       }
     }
     .navigationTitle(story.title)
-    .onAppear {
-      model.getComments(forItem: story.id) { comments in
-        self.comments = comments
-        self.commentsLoading = false
-      }
+    .task {
+      self.comments = try! await model.getComments(forItem: story.id)
+      self.commentsLoading = false
     }
   }
 }

@@ -25,8 +25,8 @@ struct CommentList: View {
         if stack.count > 1 {
           Button("Back...") {
             self.loading = true
-            model.getComments(forItem: stack[1]) { comments in
-              self.comments = comments
+            Task {
+              self.comments = try! await model.getComments(forItem: stack[1])
               self.stack = [UVarint](stack.dropFirst())
               self.loading = false
             }
@@ -34,14 +34,15 @@ struct CommentList: View {
           .padding()
         }
         List(comments, id: \.id) { c in
-          CommentRow(story: story, comment: c).onTapGesture(count: 2) {
-            self.loading = true
-            model.getComments(forItem: c.id) { comments in
-              self.comments = comments
-              self.stack = [c.id] + stack
-              self.loading = false
+          CommentRow(story: story, comment: c)
+            .onTapGesture(count: 2) {
+              self.loading = true
+              Task {
+                self.comments = try! await model.getComments(forItem: c.id)
+                self.stack = [c.id] + stack
+                self.loading = false
+              }
             }
-          }
         }
       }
     }

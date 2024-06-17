@@ -10,6 +10,7 @@ let ARCH = "x86_64"
 let ARCH = "arm64"
 #endif
 
+@MainActor
 class Model: ObservableObject {
   let b = Backend(
     withZo: Bundle.main.url(forResource: "res/core-\(ARCH)", withExtension: ".zo")!,
@@ -20,12 +21,12 @@ class Model: ObservableObject {
   @Published var stories = [Story]()
 
   init() {
-    b.getTopStories().onComplete { stories in
-      self.stories = stories
+    Task {
+      self.stories = try! await b.getTopStories()
     }
   }
 
-  func getComments(forItem id: UVarint, onComplete proc: @escaping ([Comment]) -> Void) {
-    b.getComments(forItem: id).onComplete(proc)
+  func getComments(forItem id: UVarint) async throws -> [Comment] {
+    return try await b.getComments(forItem: id)
   }
 }
