@@ -16,7 +16,15 @@
 (define (main in-fd out-fd)
   (module-cache-clear!)
   (collect-garbage)
-  (define stop
-    (serve in-fd out-fd))
-  (with-handlers ([exn:break? (λ (_) (stop))])
-    (sync never-evt)))
+  (let/cc trap
+    (parameterize ([exit-handler
+                    (lambda (err-or-code)
+                      (when (exn:fail? err-or-code)
+                        ((error-display-handler)
+                         (format "trap: ~a" (exn-message err-or-code))
+                         err-or-code))
+                      (trap))])
+      (define stop (serve in-fd out-fd))
+      (with-handlers ([exn:break? void])
+        (sync never-evt))
+      (stop))))
