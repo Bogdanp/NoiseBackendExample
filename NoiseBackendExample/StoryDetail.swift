@@ -18,8 +18,14 @@ struct StoryDetail: View {
     }
     .navigationTitle(story.title)
     .task {
-      self.comments = try! await model.getComments(forItem: story.id)
-      self.commentsLoading = false
+      do {
+        self.comments = try await model.getComments(forItem: story.id)
+        self.commentsLoading = false
+      } catch is CancellationError {
+
+      } catch {
+        preconditionFailure("error: \(error)")
+      }
     }
   }
 }

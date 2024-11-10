@@ -26,9 +26,13 @@ struct CommentList: View {
           Button("Back...") {
             self.loading = true
             Task {
-              self.comments = try! await model.getComments(forItem: stack[1])
-              self.stack = [UVarint](stack.dropFirst())
-              self.loading = false
+              do {
+                self.comments = try await model.getComments(forItem: stack[1])
+                self.stack = [UVarint](stack.dropFirst())
+                self.loading = false
+              } catch is CancellationError {
+
+              }
             }
           }
           .padding()
@@ -38,9 +42,13 @@ struct CommentList: View {
             .onTapGesture(count: 2) {
               self.loading = true
               Task {
-                self.comments = try! await model.getComments(forItem: c.id)
-                self.stack = [c.id] + stack
-                self.loading = false
+                do {
+                  self.comments = try await model.getComments(forItem: c.id)
+                  self.stack = [c.id] + stack
+                  self.loading = false
+                } catch is CancellationError {
+
+                }
               }
             }
         }

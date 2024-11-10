@@ -19,8 +19,14 @@ struct CommentDetail: View {
     }
     .navigationTitle(story.title)
     .task {
-      self.comments = try! await model.getComments(forItem: comment.id)
-      self.commentsLoading = false
+      do {
+        self.comments = try await model.getComments(forItem: comment.id)
+        self.commentsLoading = false
+      } catch is CancellationError {
+
+      } catch {
+        preconditionFailure("error: \(error)")
+      }
     }
   }
 }

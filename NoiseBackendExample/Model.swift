@@ -22,7 +22,11 @@ class Model: ObservableObject {
 
   init() {
     Task {
-      self.stories = try! await b.getTopStories()
+      do {
+        self.stories = try await b.getTopStories()
+      } catch is CancellationError {
+
+      }
     }
   }
 
