@@ -4,9 +4,7 @@ An example application built with [Noise].
 
 ## First-time setup
 
-1. Clone this repository and open the Xcode project.  Files in
-   `NoiseBackendExample/resources` are stored with [Git LFS][LFS] so
-   you'll need to install [LFS] first.
+1. Clone this repository and open the Xcode project.
 2. Change the "Development Team" under the "Signing & Capabilities"
    section of the main target.
 3. Build & run the application.
