@@ -63,7 +63,7 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "PLTSTDERR"
-            value = "error warning@ffi-lib"
+            value = "error warning@ffi-lib debug@noise"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>
