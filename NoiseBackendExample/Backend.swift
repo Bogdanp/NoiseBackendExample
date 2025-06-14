@@ -3,7 +3,7 @@ import Foundation
 import NoiseBackend
 import NoiseSerde
 
-public struct Comment: Readable, Writable {
+public struct Comment: Readable, Sendable, Writable {
   public let id: UVarint
   public let author: String
   public let timestamp: String
@@ -38,7 +38,7 @@ public struct Comment: Readable, Writable {
   }
 }
 
-public struct Story: Readable, Writable {
+public struct Story: Readable, Sendable, Writable {
   public let id: UVarint
   public let title: String
   public let comments: [UVarint]
@@ -68,7 +68,7 @@ public struct Story: Readable, Writable {
   }
 }
 
-public class Backend {
+public final class Backend: Sendable {
   let impl: NoiseBackend.Backend!
 
   init(withZo zo: URL, andMod mod: String, andProc proc: String) {
